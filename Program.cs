@@ -1,4 +1,12 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Login_Register.Areas.Identity.Data;
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("Login_RegisterDbContextConnection") ?? throw new InvalidOperationException("Connection string 'Login_RegisterDbContextConnection' not found.");
+
+builder.Services.AddDbContext<Login_RegisterDbContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<Login_RegisterDbContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,5 +31,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
 
 app.Run();
